@@ -23,7 +23,7 @@ export function gramsFor(upazila: string, totalTrees: number): Gram[] {
     `Char ${upazila}`,
   ];
   const shares = [0.32, 0.27, 0.23, 0.18];
-  const dates = [
+  const dates: [string, string][] = [
     ["12 March 2026", "9:30 AM"],
     ["28 February 2026", "10:00 AM"],
     ["15 January 2026", "8:45 AM"],
