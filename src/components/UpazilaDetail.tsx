@@ -1,62 +1,68 @@
 import { useState } from "react";
 import { gramsFor, type Gram } from "@/data/villages";
 
-type UpazilaShape = { name: string; d: string; cx: number; cy: number; trees: number };
+export type UpazilaShape = { name: string; d: string; cx: number; cy: number; trees: number };
 
-// Compute a normalized 0..100 viewBox for a single upazila path so it fills its mini-map.
-function useUpazilaViewBox(d: string) {
+// Bounding box of an SVG path made of absolute M/L/Z commands.
+export function pathBounds(d: string) {
   const nums = d.match(/-?\d+(\.\d+)?/g)?.map(Number) ?? [];
   const xs = nums.filter((_, i) => i % 2 === 0);
   const ys = nums.filter((_, i) => i % 2 === 1);
   const minX = Math.min(...xs), maxX = Math.max(...xs);
   const minY = Math.min(...ys), maxY = Math.max(...ys);
   const w = maxX - minX || 1, h = maxY - minY || 1;
-  const pad = Math.max(w, h) * 0.06;
+  const pad = Math.max(w, h) * 0.08;
   const side = Math.max(w, h) + pad * 2;
-  const ox = minX - (side - w) / 2;
-  const oy = minY - (side - h) / 2;
-  return { viewBox: `${ox} ${oy} ${side} ${side}`, scale: 100 / side, ox, oy };
+  return { ox: minX - (side - w) / 2, oy: minY - (side - h) / 2, side };
 }
 
 export function UpazilaMap({
   upazila,
   grams,
   active,
-  onSelect,
+  onHover,
+  onPick,
 }: {
   upazila: UpazilaShape;
   grams: Gram[];
   active: string | null;
-  onSelect: (name: string | null) => void;
+  onHover: (name: string | null) => void;
+  onPick: (gram: Gram) => void;
 }) {
-  const { viewBox, scale, ox, oy } = useUpazilaViewBox(upazila.d);
+  const { ox, oy, side } = pathBounds(upazila.d);
+  const u = side / 100; // 1 percent of the normalized box in path units
   return (
-    <svg viewBox={viewBox} className="w-full max-h-[70vh]" role="img" aria-label={`Map of ${upazila.name} upazila`}>
-      <path d={upazila.d} strokeWidth={1.5 * (1 / scale)} className="fill-highlight stroke-background" />
+    <svg
+      viewBox={`${ox} ${oy} ${side} ${side}`}
+      className="w-full max-h-[70vh]"
+      role="img"
+      aria-label={`Map of ${upazila.name} upazila`}
+    >
+      <path d={upazila.d} strokeWidth={1.5 * u} className="fill-highlight stroke-background" />
       {grams.map((g) => {
-        const cx = ox + (g.x / 100) * (100 / scale) * scale; // placeholder, replaced below
-        return null;
-      })}
-      {grams.map((g) => {
-        // gram x/y are percents of the normalized 0..100 box; map back into path coords
-        const minX = ox, side = 100 / scale;
-        const px = minX + (g.x / 100) * side;
-        const py = oy + (g.y / 100) * side;
+        const px = ox + g.x * u;
+        const py = oy + g.y * u;
         const isActive = active === g.name;
         return (
           <g
             key={g.name}
             className="cursor-pointer"
-            onMouseEnter={() => onSelect(g.name)}
-            onMouseLeave={() => onSelect(null)}
-            onClick={() => onSelect(g.name)}
+            onMouseEnter={() => onHover(g.name)}
+            onMouseLeave={() => onHover(null)}
+            onClick={() => onPick(g)}
           >
-            <circle cx={px} cy={py} r={isActive ? 5 / scale : 3.5 / scale} className="fill-primary stroke-background" strokeWidth={1 / scale} />
+            <circle
+              cx={px}
+              cy={py}
+              r={(isActive ? 5 : 3.5) * u}
+              className="fill-primary stroke-background"
+              strokeWidth={u}
+            />
             <text
-              x={px + 6 / scale}
-              y={py + 3 / scale}
+              x={px + 6 * u}
+              y={py + 3 * u}
               className="pointer-events-none fill-foreground font-semibold"
-              style={{ fontSize: 11 / scale }}
+              style={{ fontSize: 11 * u }}
             >
               {g.name}
             </text>
@@ -100,11 +106,7 @@ export function UpazilaDetail({
               <span className="font-display text-2xl text-primary">{upazila.trees.toLocaleString()}</span> trees planted
               across {grams.length} grams
             </p>
-            <UpazilaMap upazila={upazila} grams={grams} active={active} onSelect={(n) => {
-              setActive(n);
-              const g = grams.find((x) => x.name === n);
-              if (n && g) onSelectGram(g);
-            }} />
+            <UpazilaMap upazila={upazila} grams={grams} active={active} onHover={setActive} onPick={onSelectGram} />
           </section>
 
           <section className="animate-in fade-in slide-in-from-right-4 duration-700">
