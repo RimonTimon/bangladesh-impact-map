@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import districts from "@/data/bd-districts.json";
+import { DistrictDetail } from "@/components/DistrictDetail";
 
 // Districts where the NGO works — edit this list to change highlights.
 const HIGHLIGHTED = ["Kurigram", "Gaibandha", "Sunamganj", "Satkhira", "Bhola", "Cox's Bazar", "Bandarban", "Jamalpur"];
@@ -21,6 +22,8 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const [hover, setHover] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string | null>(null);
+  if (selected) return <DistrictDetail name={selected} onBack={() => setSelected(null)} />;
   return (
     <main className="min-h-screen bg-background text-foreground">
       <div className="mx-auto grid min-h-screen max-w-7xl items-center gap-10 px-6 py-12 lg:grid-cols-2 lg:gap-16 lg:px-12">
@@ -56,8 +59,9 @@ function Index() {
                   d={d.d}
                   onMouseEnter={() => setHover(d.name)}
                   onMouseLeave={() => setHover(null)}
+                  onClick={on ? () => { setSelected(d.name); window.scrollTo(0, 0); } : undefined}
                   className={`stroke-background transition-colors duration-300 ${
-                    on ? "fill-highlight hover:fill-highlight-strong" : "fill-map hover:fill-map-hover"
+                    on ? "cursor-pointer fill-highlight hover:fill-highlight-strong" : "fill-map hover:fill-map-hover"
                   }`}
                   strokeWidth={1}
                 >
@@ -78,7 +82,7 @@ function Index() {
           </svg>
           <div className="mt-4 flex items-center justify-center gap-6 text-sm text-muted-foreground">
             <span className="flex items-center gap-2"><i className="h-3 w-3 rounded-sm bg-highlight" /> Where we work</span>
-            <span className="min-w-28 font-medium text-foreground">{hover ?? "Hover a district"}</span>
+            <span className="min-w-28 font-medium text-foreground">{hover ?? "Tap a red district"}</span>
           </div>
         </section>
       </div>
