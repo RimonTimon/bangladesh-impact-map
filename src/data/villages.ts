@@ -35,13 +35,17 @@ export function gramsFor(upazila: string, totalTrees: number): Gram[] {
     [35, 62],
     [55, 78],
   ];
-  return names.map((name, i) => ({
-    name,
-    trees: Math.round(totalTrees * shares[i]),
-    date: dates[i][0],
-    time: dates[i][1],
-    info: INFO,
-    x: spots[i][0],
-    y: spots[i][1],
-  }));
+  return names.map((name, i) => {
+    const [date, time] = dates[i] ?? ["", ""];
+    const [x, y] = spots[i] ?? [50, 50];
+    return {
+      name,
+      trees: Math.round(totalTrees * (shares[i] ?? 0.1)),
+      date,
+      time,
+      info: INFO,
+      x,
+      y,
+    };
+  });
 }
