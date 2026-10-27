@@ -62,18 +62,22 @@ export function GramDetail({
               </span>
             </div>
 
-            <dl className="mt-6 grid grid-cols-2 gap-4">
-              <div className="rounded-xl border border-border p-4">
-                <dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Plantation date</dt>
-                <dd className="mt-1 font-semibold">{gram.date}</dd>
-              </div>
-              <div className="rounded-xl border border-border p-4">
-                <dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Time</dt>
-                <dd className="mt-1 font-semibold">{gram.time}</dd>
-              </div>
+            <dl className="mt-6 grid grid-cols-3 divide-x divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+              {[
+                ["Trees planted", gram.trees.toLocaleString()],
+                ["Date", gram.date],
+                ["Time", gram.time],
+              ].map(([label, value]) => (
+                <div key={label} className="px-4 py-3.5 text-center">
+                  <dt className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+                    {label}
+                  </dt>
+                  <dd className="mt-1 truncate text-sm font-semibold tabular-nums">{value}</dd>
+                </div>
+              ))}
             </dl>
 
-            <p className="mt-6 leading-relaxed text-muted-foreground">{gram.info}</p>
+            <p className="mt-5 text-sm leading-relaxed text-muted-foreground">{gram.info}</p>
           </section>
 
           <section className="animate-in fade-in slide-in-from-right-4 duration-700">
