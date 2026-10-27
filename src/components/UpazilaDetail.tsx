@@ -31,6 +31,8 @@ export function UpazilaMap({
 }) {
   const { ox, oy, side } = pathBounds(upazila.d);
   const u = side / 100; // 1 percent of the normalized box in path units
+  const dotR = side * 0.014;
+  const fontSize = side * 0.032;
   return (
     <svg
       viewBox={`${ox} ${oy} ${side} ${side}`}
@@ -54,15 +56,15 @@ export function UpazilaMap({
             <circle
               cx={px}
               cy={py}
-              r={(isActive ? 5 : 3.5) * u}
+              r={isActive ? dotR * 1.5 : dotR}
               className="fill-primary stroke-background"
-              strokeWidth={u}
+              strokeWidth={side * 0.004}
             />
             <text
-              x={px + 6 * u}
-              y={py + 3 * u}
+              x={px + dotR * 2}
+              y={py + fontSize * 0.35}
               className="pointer-events-none fill-foreground font-semibold"
-              style={{ fontSize: 11 * u }}
+              style={{ fontSize }}
             >
               {g.name}
             </text>
