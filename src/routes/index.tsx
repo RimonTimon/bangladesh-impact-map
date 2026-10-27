@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import districts from "@/data/bd-districts.json";
-import { DistrictDetail } from "@/components/DistrictDetail";
+import { DistrictDetail, type Upazila } from "@/components/DistrictDetail";
+import { UpazilaDetail } from "@/components/UpazilaDetail";
+import { GramDetail } from "@/components/GramDetail";
+import type { Gram } from "@/data/villages";
 
 // Districts where the NGO works — edit this list to change highlights.
 const HIGHLIGHTED = ["Kurigram", "Gaibandha", "Sunamganj", "Satkhira", "Bhola", "Cox's Bazar", "Bandarban", "Jamalpur"];
@@ -23,7 +26,34 @@ export const Route = createFileRoute("/")({
 function Index() {
   const [hover, setHover] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
-  if (selected) return <DistrictDetail name={selected} onBack={() => setSelected(null)} />;
+  const [upazila, setUpazila] = useState<Upazila | null>(null);
+  const [gram, setGram] = useState<Gram | null>(null);
+
+  if (selected && upazila && gram)
+    return <GramDetail district={selected} upazila={upazila} gram={gram} onBack={() => setGram(null)} />;
+  if (selected && upazila)
+    return (
+      <UpazilaDetail
+        district={selected}
+        upazila={upazila}
+        onBack={() => setUpazila(null)}
+        onSelectGram={(g) => {
+          setGram(g);
+          window.scrollTo(0, 0);
+        }}
+      />
+    );
+  if (selected)
+    return (
+      <DistrictDetail
+        name={selected}
+        onBack={() => setSelected(null)}
+        onSelectUpazila={(u) => {
+          setUpazila(u);
+          window.scrollTo(0, 0);
+        }}
+      />
+    );
   return (
     <main className="min-h-screen bg-background text-foreground">
       <div className="mx-auto grid min-h-screen max-w-7xl items-center gap-10 px-6 py-12 lg:grid-cols-2 lg:gap-16 lg:px-12">
