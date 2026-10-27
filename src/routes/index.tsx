@@ -47,7 +47,7 @@ function Index() {
         </section>
 
         <section className="relative">
-          <svg viewBox="0 0 520 660" className="mx-auto w-full max-w-lg" role="img" aria-label="Map of Bangladesh with highlighted districts">
+          <svg viewBox="0 0 640 790" overflow="visible" className="mx-auto w-full max-w-lg" role="img" aria-label="Map of Bangladesh with highlighted districts">
             {districts.map((d) => {
               const on = HIGHLIGHTED.includes(d.name);
               return (
