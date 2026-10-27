@@ -1,4 +1,5 @@
 import type { Gram } from "@/data/villages";
+import { pathBounds } from "@/components/UpazilaDetail";
 import photo1 from "@/assets/plantation-1.jpg";
 import photo2 from "@/assets/plantation-2.jpg";
 import photo3 from "@/assets/plantation-3.jpg";
@@ -41,15 +42,21 @@ export function GramDetail({
 
             {/* Mini map: the upazila outline with this gram marked */}
             <div className="relative mt-6 overflow-hidden rounded-2xl border border-border bg-map/40">
-              <svg viewBox="0 0 100 100" className="w-full" role="img" aria-label={`Mini map of ${gram.name}`}>
-                <g transform="translate(50 50) scale(0.9) translate(-50 -50)">
-                  <path d={upazila.d} className="fill-highlight stroke-background" strokeWidth={1.5} />
-                </g>
-                <circle cx={gram.x} cy={gram.y} r={8} className="fill-primary/25">
-                  <animate attributeName="r" values="6;10;6" dur="2s" repeatCount="indefinite" />
-                </circle>
-                <circle cx={gram.x} cy={gram.y} r={3.5} className="fill-primary" />
-              </svg>
+              {(() => {
+                const { ox, oy, side } = pathBounds(upazila.d);
+                const u = side / 100;
+                const px = ox + gram.x * u;
+                const py = oy + gram.y * u;
+                return (
+                  <svg viewBox={`${ox} ${oy} ${side} ${side}`} className="w-full" role="img" aria-label={`Mini map of ${gram.name}`}>
+                    <path d={upazila.d} className="fill-highlight stroke-background" strokeWidth={1.5 * u} />
+                    <circle cx={px} cy={py} r={8 * u} className="fill-primary/25">
+                      <animate attributeName="r" values={`${6 * u};${10 * u};${6 * u}`} dur="2s" repeatCount="indefinite" />
+                    </circle>
+                    <circle cx={px} cy={py} r={3.5 * u} className="fill-primary" />
+                  </svg>
+                );
+              })()}
               <span className="absolute bottom-3 left-3 rounded-full bg-background/90 px-3 py-1 text-xs font-semibold">
                 📍 {gram.name}, {upazila.name}
               </span>
