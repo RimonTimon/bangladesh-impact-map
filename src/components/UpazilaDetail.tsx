@@ -112,26 +112,53 @@ export function UpazilaDetail({
           </section>
 
           <section className="animate-in fade-in slide-in-from-right-4 duration-700">
-            <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Gram · Trees planted
-            </h2>
-            <ul className="mt-4 divide-y divide-border">
-              {grams.map((g) => (
+            <div className="flex items-baseline justify-between">
+              <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                Gram · Trees planted
+              </h2>
+              <span className="text-xs text-muted-foreground">{grams.length} grams</span>
+            </div>
+            <ul className="mt-4 overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+              {grams.map((g, i) => (
                 <li
                   key={g.name}
                   onMouseEnter={() => setActive(g.name)}
                   onMouseLeave={() => setActive(null)}
                   onClick={() => onSelectGram(g)}
-                  className={`cursor-pointer rounded-lg px-3 py-4 transition-colors ${active === g.name ? "bg-secondary" : ""}`}
+                  className={`group cursor-pointer px-5 py-3.5 transition-colors ${
+                    i > 0 ? "border-t border-border" : ""
+                  } ${active === g.name ? "bg-secondary" : "hover:bg-secondary/60"}`}
                 >
-                  <div className="flex items-baseline justify-between gap-4">
-                    <span className="font-semibold">{g.name}</span>
-                    <span className="font-display text-xl text-primary">🌳 {g.trees.toLocaleString()}</span>
+                  <div className="flex items-center gap-4">
+                    <span className="w-6 shrink-0 text-center font-display text-sm text-muted-foreground">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline justify-between gap-3">
+                        <span className="truncate text-sm font-semibold">{g.name}</span>
+                        <span className="shrink-0 text-sm font-semibold tabular-nums text-primary">
+                          {g.trees.toLocaleString()}
+                          <span className="ml-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                            trees
+                          </span>
+                        </span>
+                      </div>
+                      <div className="mt-1.5 flex items-center gap-3">
+                        <div className="h-1 flex-1 overflow-hidden rounded-full bg-map">
+                          <div
+                            className="h-full rounded-full bg-primary/80 transition-all"
+                            style={{ width: `${(g.trees / max) * 100}%` }}
+                          />
+                        </div>
+                        <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground">
+                          {g.date} · {g.time}
+                        </span>
+                      </div>
+                    </div>
+                    <span className="shrink-0 text-muted-foreground/50 transition-transform group-hover:translate-x-0.5 group-hover:text-primary">
+                      →
+                    </span>
                   </div>
-                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-map">
-                    <div className="h-full rounded-full bg-primary" style={{ width: `${(g.trees / max) * 100}%` }} />
-                  </div>
-                  <p className="mt-2 text-xs text-muted-foreground">Planted on {g.date} · {g.time}</p>
                 </li>
               ))}
             </ul>
