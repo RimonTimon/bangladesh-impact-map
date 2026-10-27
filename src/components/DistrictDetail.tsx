@@ -31,12 +31,17 @@ export function DistrictDetail({
 
         <div className="mt-8 grid items-start gap-10 lg:grid-cols-2 lg:gap-16">
           <section className="animate-in fade-in zoom-in-95 duration-500">
-            <h1 className="font-display text-5xl">{name}</h1>
-            <p className="mt-2 text-muted-foreground">
-              <span className="font-display text-2xl text-primary">{total.toLocaleString()}</span> trees planted across{" "}
-              {district.upazilas.length} upazilas
+            <h1 className="font-display text-4xl">{name}</h1>
+            <p className="mt-1.5 text-sm text-muted-foreground">
+              <span className="font-semibold tabular-nums text-primary">{total.toLocaleString()}</span> trees planted
+              across {district.upazilas.length} upazilas
             </p>
-            <svg viewBox={`0 0 ${district.w} ${district.h}`} className="mt-6 w-full max-h-[75vh]" role="img" aria-label={`Map of ${name}`}>
+            <svg
+              viewBox={`0 0 ${district.w} ${district.h}`}
+              className="mt-6 w-full max-h-[75vh]"
+              role="img"
+              aria-label={`Map of ${name}`}
+            >
               {district.upazilas.map((u) => (
                 <path
                   key={u.name}
@@ -67,27 +72,52 @@ export function DistrictDetail({
           </section>
 
           <section className="animate-in fade-in slide-in-from-right-4 duration-700">
-            <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Upazila · Trees planted
-            </h2>
-            <ul className="mt-4 divide-y divide-border">
-              {district.upazilas.map((u) => (
+            <div className="flex items-baseline justify-between gap-4 px-1">
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                Upazila
+              </h2>
+              <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                Trees planted
+              </span>
+            </div>
+            <ul className="mt-2 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+              {district.upazilas.map((u, i) => (
                 <li
                   key={u.name}
                   onMouseEnter={() => setActive(u.name)}
                   onMouseLeave={() => setActive(null)}
                   onClick={() => onSelectUpazila(u)}
-                  className={`cursor-pointer rounded-lg px-3 py-4 transition-colors ${active === u.name ? "bg-secondary" : ""}`}
+                  className={`flex cursor-pointer items-center gap-3 px-4 py-2 transition-colors ${
+                    i > 0 ? "border-t border-border" : ""
+                  } ${active === u.name ? "bg-secondary" : "hover:bg-secondary/50"}`}
                 >
-                  <div className="flex items-baseline justify-between gap-4">
-                    <span className="font-semibold">{u.name}</span>
-                    <span className="font-display text-xl text-primary">🌳 {u.trees.toLocaleString()}</span>
-                  </div>
-                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-map">
-                    <div className="h-full rounded-full bg-primary" style={{ width: `${(u.trees / max) * 100}%` }} />
-                  </div>
+                  <span className="w-4 shrink-0 text-[10px] tabular-nums text-muted-foreground/60">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span
+                    className={`min-w-0 flex-1 truncate text-[13px] font-medium ${
+                      active === u.name ? "text-primary" : "text-foreground"
+                    }`}
+                  >
+                    {u.name}
+                  </span>
+                  <span className="hidden h-[3px] w-16 shrink-0 overflow-hidden rounded-full bg-map sm:block">
+                    <span
+                      className="block h-full rounded-full bg-primary/70"
+                      style={{ width: `${(u.trees / max) * 100}%` }}
+                    />
+                  </span>
+                  <span className="w-14 shrink-0 text-right text-[13px] font-semibold tabular-nums">
+                    {u.trees.toLocaleString()}
+                  </span>
                 </li>
               ))}
+              <li className="flex items-center justify-between gap-3 border-t border-border bg-secondary/40 px-4 py-2">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  Total
+                </span>
+                <span className="text-[13px] font-semibold tabular-nums text-primary">{total.toLocaleString()}</span>
+              </li>
             </ul>
           </section>
         </div>
