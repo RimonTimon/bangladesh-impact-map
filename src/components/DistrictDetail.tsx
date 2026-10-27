@@ -1,10 +1,18 @@
 import { useState } from "react";
 import data from "@/data/upazilas.json";
 
-type Upazila = { name: string; d: string; cx: number; cy: number; trees: number };
+export type Upazila = { name: string; d: string; cx: number; cy: number; trees: number };
 const all = data as Record<string, { w: number; h: number; upazilas: Upazila[] }>;
 
-export function DistrictDetail({ name, onBack }: { name: string; onBack: () => void }) {
+export function DistrictDetail({
+  name,
+  onBack,
+  onSelectUpazila,
+}: {
+  name: string;
+  onBack: () => void;
+  onSelectUpazila: (u: Upazila) => void;
+}) {
   const district = all[name];
   const [active, setActive] = useState<string | null>(null);
   if (!district) return null;
@@ -35,7 +43,7 @@ export function DistrictDetail({ name, onBack }: { name: string; onBack: () => v
                   d={u.d}
                   onMouseEnter={() => setActive(u.name)}
                   onMouseLeave={() => setActive(null)}
-                  onClick={() => setActive(u.name)}
+                  onClick={() => onSelectUpazila(u)}
                   strokeWidth={1.5}
                   className={`cursor-pointer stroke-background transition-colors duration-300 ${
                     active === u.name ? "fill-highlight-strong" : "fill-highlight hover:fill-highlight-strong"
@@ -68,7 +76,8 @@ export function DistrictDetail({ name, onBack }: { name: string; onBack: () => v
                   key={u.name}
                   onMouseEnter={() => setActive(u.name)}
                   onMouseLeave={() => setActive(null)}
-                  className={`rounded-lg px-3 py-4 transition-colors ${active === u.name ? "bg-secondary" : ""}`}
+                  onClick={() => onSelectUpazila(u)}
+                  className={`cursor-pointer rounded-lg px-3 py-4 transition-colors ${active === u.name ? "bg-secondary" : ""}`}
                 >
                   <div className="flex items-baseline justify-between gap-4">
                     <span className="font-semibold">{u.name}</span>
