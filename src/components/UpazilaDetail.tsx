@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { gramsFor, type Gram } from "@/data/villages";
+import { Shell } from "@/components/Shell";
+import { Legend, Stat } from "@/components/DistrictDetail";
+import { bnNum } from "@/data/bn";
 
 export type UpazilaShape = { name: string; d: string; cx: number; cy: number; trees: number };
 
@@ -16,65 +19,6 @@ export function pathBounds(d: string) {
   return { ox: minX - (side - w) / 2, oy: minY - (side - h) / 2, side };
 }
 
-export function UpazilaMap({
-  upazila,
-  grams,
-  active,
-  onHover,
-  onPick,
-}: {
-  upazila: UpazilaShape;
-  grams: Gram[];
-  active: string | null;
-  onHover: (name: string | null) => void;
-  onPick: (gram: Gram) => void;
-}) {
-  const { ox, oy, side } = pathBounds(upazila.d);
-  const u = side / 100; // 1 percent of the normalized box in path units
-  const dotR = side * 0.014;
-  const fontSize = side * 0.032;
-  return (
-    <svg
-      viewBox={`${ox} ${oy} ${side} ${side}`}
-      className="w-full max-h-[70vh]"
-      role="img"
-      aria-label={`Map of ${upazila.name} upazila`}
-    >
-      <path d={upazila.d} strokeWidth={1.5 * u} className="fill-highlight stroke-background" />
-      {grams.map((g) => {
-        const px = ox + g.x * u;
-        const py = oy + g.y * u;
-        const isActive = active === g.name;
-        return (
-          <g
-            key={g.name}
-            className="cursor-pointer"
-            onMouseEnter={() => onHover(g.name)}
-            onMouseLeave={() => onHover(null)}
-            onClick={() => onPick(g)}
-          >
-            <circle
-              cx={px}
-              cy={py}
-              r={isActive ? dotR * 1.5 : dotR}
-              className="fill-primary stroke-background"
-              strokeWidth={side * 0.004}
-            />
-            <text
-              x={px + dotR * 2}
-              y={py + fontSize * 0.35}
-              className="pointer-events-none fill-foreground font-semibold"
-              style={{ fontSize }}
-            >
-              {g.name}
-            </text>
-          </g>
-        );
-      })}
-    </svg>
-  );
-}
-
 export function UpazilaDetail({
   district,
   upazila,
@@ -88,83 +32,82 @@ export function UpazilaDetail({
 }) {
   const grams = gramsFor(upazila.name, upazila.trees);
   const [active, setActive] = useState<string | null>(null);
-  const max = Math.max(...grams.map((g) => g.trees));
+  const max = Math.max(1, ...grams.map((g) => g.trees));
+  const planted = grams.filter((g) => g.trees > 0).length;
+  const pick = (g: Gram) => g.trees > 0 && onSelectGram(g);
+  const { ox, oy, side } = pathBounds(upazila.d);
+  const u = side / 100;
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto max-w-7xl px-6 py-10 lg:px-12">
-        <button
-          onClick={onBack}
-          className="rounded-full border border-border px-4 py-2 text-sm font-semibold transition-colors hover:bg-secondary"
-        >
-          ← Back to {district} map
-        </button>
-
-        <div className="mt-8 grid items-start gap-10 lg:grid-cols-2 lg:gap-16">
-          <section className="animate-in fade-in zoom-in-95 duration-500">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">{district}</p>
-            <h1 className="mt-2 font-display text-5xl">{upazila.name}</h1>
-            <p className="mt-2 text-muted-foreground">
-              <span className="font-display text-2xl text-primary">{upazila.trees.toLocaleString()}</span> trees planted
-              across {grams.length} grams
-            </p>
-            <UpazilaMap upazila={upazila} grams={grams} active={active} onHover={setActive} onPick={onSelectGram} />
-          </section>
-
-          <section className="animate-in fade-in slide-in-from-right-4 duration-700">
-            <div className="flex items-baseline justify-between">
-              <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                Gram · Trees planted
-              </h2>
-              <span className="text-xs text-muted-foreground">{grams.length} grams</span>
+    <Shell onBack={onBack} backLabel={`${district} জেলা`}>
+      <div className="mx-auto grid h-full max-w-6xl grid-rows-[minmax(0,1fr)_auto] gap-3 px-4 pb-2 sm:px-8 lg:grid-cols-2 lg:grid-rows-1 lg:gap-10">
+        <section className="flex min-h-0 flex-col animate-in fade-in zoom-in-95 duration-500">
+          <div className="flex items-baseline justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[11px] text-muted-foreground">{district} জেলা</p>
+              <h1 className="truncate font-display text-2xl sm:text-3xl">{upazila.name} উপজেলা</h1>
             </div>
-            <ul className="mt-4 overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-              {grams.map((g, i) => (
+            <Legend />
+          </div>
+          <svg viewBox={`${ox} ${oy} ${side} ${side}`} className="mt-2 min-h-0 w-full flex-1" role="img" aria-label={`${upazila.name} উপজেলার মানচিত্র`}>
+            <path d={upazila.d} strokeWidth={1.5 * u} className="fill-highlight/85 stroke-background" />
+            {grams.map((g) => {
+              const on = g.trees > 0;
+              const px = ox + g.x * u, py = oy + g.y * u;
+              const r = (active === g.name ? 2.2 : 1.5) * u;
+              return (
+                <g key={g.name} className={on ? "cursor-pointer" : ""} onMouseEnter={() => setActive(g.name)} onMouseLeave={() => setActive(null)} onClick={() => pick(g)}>
+                  <circle cx={px} cy={py} r={r} className={`${on ? "fill-primary" : "fill-map"} stroke-background transition-all`} strokeWidth={0.4 * u} />
+                  <text x={px + 3 * u} y={py + 1.1 * u} className="pointer-events-none fill-foreground stroke-background font-semibold" style={{ fontSize: 3.2 * u, paintOrder: "stroke", strokeWidth: 0.8 * u }}>
+                    {g.name}
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
+        </section>
+
+        <section className="flex min-h-0 flex-col lg:justify-center animate-in fade-in slide-in-from-right-4 duration-700">
+          <div className="grid grid-cols-3 gap-2">
+            <Stat label="মোট গাছ" value={bnNum(upazila.trees)} />
+            <Stat label="রোপিত গ্রাম" value={`${bnNum(planted)}/${bnNum(grams.length)}`} />
+            <Stat label="বাকি গ্রাম" value={bnNum(grams.length - planted)} />
+          </div>
+          <ul className="mt-3 rounded-2xl bg-card p-1.5 shadow-soft">
+            {grams.map((g) => {
+              const on = g.trees > 0;
+              return (
                 <li
                   key={g.name}
                   onMouseEnter={() => setActive(g.name)}
                   onMouseLeave={() => setActive(null)}
-                  onClick={() => onSelectGram(g)}
-                  className={`group cursor-pointer px-5 py-3.5 transition-colors ${
-                    i > 0 ? "border-t border-border" : ""
-                  } ${active === g.name ? "bg-secondary" : "hover:bg-secondary/60"}`}
+                  onClick={() => pick(g)}
+                  className={`group flex items-center gap-3 rounded-xl px-3 py-2 transition-colors ${on ? "cursor-pointer" : ""} ${
+                    active === g.name ? "bg-secondary" : "hover:bg-secondary/50"
+                  }`}
                 >
-                  <div className="flex items-center gap-4">
-                    <span className="w-6 shrink-0 text-center font-display text-sm text-muted-foreground">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-baseline justify-between gap-3">
-                        <span className="truncate text-sm font-semibold">{g.name}</span>
-                        <span className="shrink-0 text-sm font-semibold tabular-nums text-primary">
-                          {g.trees.toLocaleString()}
-                          <span className="ml-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                            trees
-                          </span>
-                        </span>
-                      </div>
-                      <div className="mt-1.5 flex items-center gap-3">
-                        <div className="h-1 flex-1 overflow-hidden rounded-full bg-map">
-                          <div
-                            className="h-full rounded-full bg-primary/80 transition-all"
-                            style={{ width: `${(g.trees / max) * 100}%` }}
-                          />
-                        </div>
-                        <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground">
-                          {g.date} · {g.time}
-                        </span>
-                      </div>
-                    </div>
-                    <span className="shrink-0 text-muted-foreground/50 transition-transform group-hover:translate-x-0.5 group-hover:text-primary">
-                      →
-                    </span>
+                  <i className={`h-2 w-2 shrink-0 rounded-full ${on ? "bg-primary" : "bg-map-hover"}`} />
+                  <div className="min-w-0 flex-1">
+                    <div className={`truncate text-[13px] font-semibold ${on ? "" : "text-muted-foreground"}`}>{g.name}</div>
+                    <div className="truncate text-[10px] text-muted-foreground">{on ? `${g.date} · ${g.time}` : "পরিকল্পিত এলাকা"}</div>
                   </div>
+                  {on ? (
+                    <>
+                      <span className="hidden h-1 w-14 shrink-0 overflow-hidden rounded-full bg-map sm:block">
+                        <span className="block h-full rounded-full bg-primary/70" style={{ width: `${(g.trees / max) * 100}%` }} />
+                      </span>
+                      <span className="w-14 shrink-0 text-right text-[13px] font-semibold tabular-nums text-primary">{bnNum(g.trees)}</span>
+                      <span className="shrink-0 text-muted-foreground/50 transition-transform group-hover:translate-x-0.5 group-hover:text-primary">→</span>
+                    </>
+                  ) : (
+                    <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">এখনো রোপণ হয়নি</span>
+                  )}
                 </li>
-              ))}
-            </ul>
-          </section>
-        </div>
+              );
+            })}
+          </ul>
+        </section>
       </div>
-    </main>
+    </Shell>
   );
 }

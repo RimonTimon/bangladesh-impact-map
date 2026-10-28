@@ -1,49 +1,52 @@
-// Placeholder gram (village) data per upazila.
-// Replace names, tree counts, dates and info with the NGO's real records.
+// Placeholder gram (village) data per upazila — replace with the NGO's real records.
 
 export type Gram = {
   name: string;
-  trees: number;
+  trees: number; // 0 = not yet planted
   date: string;
   time: string;
   info: string;
-  // dot position on the upazila mini-map, in percent of the upazila's bounding box
-  x: number;
+  x: number; // dot position, % of upazila bounding box
   y: number;
 };
 
+const POOL = [
+  "চরপাড়া", "নয়াপাড়া", "বটতলা", "পূর্বপাড়া", "শিমুলতলী", "কাশিপুর",
+  "রামনগর", "হরিপুর", "দক্ষিণপাড়া", "মধুপুর", "বকুলতলা", "নতুনহাট",
+];
+
 const INFO =
-  "Community-led plantation drive with local volunteers and school students. Saplings are native fruit and timber species, cared for by a village green committee.";
+  "স্থানীয় স্বেচ্ছাসেবক ও স্কুলের শিক্ষার্থীদের নিয়ে সমাজভিত্তিক বৃক্ষরোপণ কর্মসূচি। দেশীয় ফলজ ও বনজ চারা রোপণ করা হয়েছে, যার পরিচর্যা করছে গ্রামের সবুজ কমিটি।";
+const PLANNED_INFO = "এই গ্রামে শীঘ্রই বৃক্ষরোপণ কর্মসূচি শুরু হবে। আপনার সহায়তায় এখানে সবুজ ফিরিয়ে আনা সম্ভব।";
+
+const DATES: [string, string][] = [
+  ["১২ মার্চ ২০২৬", "সকাল ৯:৩০"],
+  ["২৮ ফেব্রুয়ারি ২০২৬", "সকাল ১০:০০"],
+  ["১৫ জানুয়ারি ২০২৬", "সকাল ৮:৪৫"],
+  ["৩ ডিসেম্বর ২০২৫", "সকাল ১১:১৫"],
+];
+const SPOTS: [number, number][] = [[40, 28], [64, 44], [32, 58], [58, 72], [46, 86]];
+const SHARES = [0.38, 0.3, 0.2, 0.12];
+
+function hash(s: string) {
+  let h = 0;
+  for (const c of s) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return h;
+}
 
 export function gramsFor(upazila: string, totalTrees: number): Gram[] {
-  const names = [
-    `${upazila} Sadar Gram`,
-    `Uttar ${upazila}`,
-    `Dakshin ${upazila}`,
-    `Char ${upazila}`,
-  ];
-  const shares = [0.32, 0.27, 0.23, 0.18];
-  const dates: [string, string][] = [
-    ["12 March 2026", "9:30 AM"],
-    ["28 February 2026", "10:00 AM"],
-    ["15 January 2026", "8:45 AM"],
-    ["3 December 2025", "11:15 AM"],
-  ];
-  const spots: [number, number][] = [
-    [42, 30],
-    [62, 48],
-    [35, 62],
-    [55, 78],
-  ];
-  return names.map((name, i) => {
-    const [date, time] = dates[i] ?? ["", ""];
-    const [x, y] = spots[i] ?? [50, 50];
+  const start = hash(upazila) % POOL.length;
+  return SPOTS.map(([x, y], i) => {
+    const name = POOL[(start + i * 5) % POOL.length] ?? "গ্রাম";
+    // last gram (and every gram in an unplanted upazila) is not yet planted
+    const planted = totalTrees > 0 && i < 4;
+    const [date, time] = DATES[i] ?? ["", ""];
     return {
       name,
-      trees: Math.round(totalTrees * (shares[i] ?? 0.1)),
-      date,
-      time,
-      info: INFO,
+      trees: planted ? Math.round(totalTrees * (SHARES[i] ?? 0)) : 0,
+      date: planted ? date : "পরিকল্পিত",
+      time: planted ? time : "—",
+      info: planted ? INFO : PLANNED_INFO,
       x,
       y,
     };
