@@ -58,7 +58,7 @@ export function UpazilaDetail({
               return (
                 <g key={g.name} className={on ? "cursor-pointer" : ""} onMouseEnter={() => setActive(g.name)} onMouseLeave={() => setActive(null)} onClick={() => pick(g)}>
                   <circle cx={px} cy={py} r={r} className={`${on ? "fill-primary" : "fill-map"} stroke-background transition-all`} strokeWidth={0.4 * u} />
-                  <text x={px + 3 * u} y={py + 1.1 * u} className="pointer-events-none fill-primary-foreground font-semibold" style={{ fontSize: 3.2 * u }}>
+                  <text x={px + 3 * u} y={py + 1.1 * u} className="pointer-events-none fill-foreground stroke-background font-semibold" style={{ fontSize: 3.2 * u, paintOrder: "stroke", strokeWidth: 0.8 * u }}>
                     {g.name}
                   </text>
                 </g>
