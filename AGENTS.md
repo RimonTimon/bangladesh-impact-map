@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Every page renders inside `src/components/Shell.tsx` (fixed-height, no page scroll, shared header with donate/volunteer dialogs) so layout stays consistent.
