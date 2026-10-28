@@ -1,11 +1,14 @@
 import type { Gram } from "@/data/villages";
-import { pathBounds } from "@/components/UpazilaDetail";
+import { pathBounds, type UpazilaShape } from "@/components/UpazilaDetail";
+import { Shell } from "@/components/Shell";
+import { bnNum } from "@/data/bn";
+import { toast } from "sonner";
 import photo1 from "@/assets/plantation-1.jpg";
 import photo2 from "@/assets/plantation-2.jpg";
 import photo3 from "@/assets/plantation-3.jpg";
 import photo4 from "@/assets/plantation-4.jpg";
 
-type UpazilaShape = { name: string; d: string; cx: number; cy: number; trees: number };
+const photos = [photo1, photo2, photo3, photo4];
 
 export function GramDetail({
   district,
@@ -18,86 +21,68 @@ export function GramDetail({
   gram: Gram;
   onBack: () => void;
 }) {
-  const photos = [photo1, photo2, photo3, photo4];
+  const { ox, oy, side } = pathBounds(upazila.d);
+  const u = side / 100;
+  const px = ox + gram.x * u, py = oy + gram.y * u;
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto max-w-6xl px-6 py-10 lg:px-12">
-        <button
-          onClick={onBack}
-          className="rounded-full border border-border px-4 py-2 text-sm font-semibold transition-colors hover:bg-secondary"
-        >
-          ← Back to {upazila.name} upazila
-        </button>
-
-        <div className="mt-8 grid items-start gap-10 lg:grid-cols-2 lg:gap-16">
-          <section className="animate-in fade-in zoom-in-95 duration-500">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              {district} · {upazila.name}
-            </p>
-            <h1 className="mt-2 font-display text-5xl">{gram.name}</h1>
-            <p className="mt-3 text-muted-foreground">
-              <span className="font-display text-2xl text-primary">{gram.trees.toLocaleString()}</span> trees planted
-            </p>
-
-            {/* Mini map: the upazila outline with this gram marked */}
-            <div className="relative mt-6 overflow-hidden rounded-2xl border border-border bg-map/40">
-              {(() => {
-                const { ox, oy, side } = pathBounds(upazila.d);
-                const u = side / 100;
-                const px = ox + gram.x * u;
-                const py = oy + gram.y * u;
-                return (
-                  <svg viewBox={`${ox} ${oy} ${side} ${side}`} className="w-full" role="img" aria-label={`Mini map of ${gram.name}`}>
-                    <path d={upazila.d} className="fill-highlight stroke-background" strokeWidth={1.5 * u} />
-                    <circle cx={px} cy={py} r={8 * u} className="fill-primary/25">
-                      <animate attributeName="r" values={`${6 * u};${10 * u};${6 * u}`} dur="2s" repeatCount="indefinite" />
-                    </circle>
-                    <circle cx={px} cy={py} r={3.5 * u} className="fill-primary" />
-                  </svg>
-                );
-              })()}
-              <span className="absolute bottom-3 left-3 rounded-full bg-background/90 px-3 py-1 text-xs font-semibold">
-                📍 {gram.name}, {upazila.name}
-              </span>
+    <Shell onBack={onBack} backLabel={`${upazila.name} উপজেলা`}>
+      <div className="mx-auto grid h-full max-w-6xl grid-rows-[auto_minmax(0,1fr)] gap-3 px-4 pb-2 sm:px-8 lg:grid-cols-[2fr_3fr] lg:grid-rows-1 lg:gap-10">
+        <section className="flex min-h-0 flex-col gap-2.5 lg:justify-center animate-in fade-in zoom-in-95 duration-500">
+          <div className="flex items-center gap-3">
+            <div className="h-16 w-16 shrink-0 rounded-xl bg-secondary/60 p-1 sm:h-24 sm:w-24 lg:h-32 lg:w-32">
+              <svg viewBox={`${ox} ${oy} ${side} ${side}`} className="h-full w-full" role="img" aria-label={`${gram.name} গ্রামের অবস্থান`}>
+                <path d={upazila.d} className="fill-highlight stroke-background" strokeWidth={1.5 * u} />
+                <circle cx={px} cy={py} r={6 * u} className="fill-primary/30">
+                  <animate attributeName="r" values={`${4 * u};${9 * u};${4 * u}`} dur="2s" repeatCount="indefinite" />
+                </circle>
+                <circle cx={px} cy={py} r={3 * u} className="fill-primary stroke-background" strokeWidth={u} />
+              </svg>
             </div>
-
-            <dl className="mt-6 grid grid-cols-3 divide-x divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-              {[
-                ["Trees planted", gram.trees.toLocaleString()],
-                ["Date", gram.date],
-                ["Time", gram.time],
-              ].map(([label, value]) => (
-                <div key={label} className="px-4 py-3.5 text-center">
-                  <dt className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
-                    {label}
-                  </dt>
-                  <dd className="mt-1 truncate text-sm font-semibold tabular-nums">{value}</dd>
-                </div>
-              ))}
-            </dl>
-
-            <p className="mt-5 text-sm leading-relaxed text-muted-foreground">{gram.info}</p>
-          </section>
-
-          <section className="animate-in fade-in slide-in-from-right-4 duration-700">
-            <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Plantation photos
-            </h2>
-            <div className="mt-4 grid grid-cols-2 gap-4">
-              {photos.map((src, i) => (
-                <img
-                  key={i}
-                  src={src}
-                  alt={`Tree plantation at ${gram.name}, photo ${i + 1}`}
-                  className="aspect-[4/3] w-full rounded-xl border border-border object-cover"
-                  loading="lazy"
-                />
-              ))}
+            <div className="min-w-0">
+              <p className="truncate text-[11px] text-muted-foreground">{district} · {upazila.name}</p>
+              <h1 className="truncate font-display text-2xl sm:text-4xl">{gram.name}</h1>
+              <span className="mt-1 inline-block rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold text-secondary-foreground">✓ রোপণ সম্পন্ন</span>
             </div>
-          </section>
-        </div>
+          </div>
+
+          <dl className="grid grid-cols-3 gap-2">
+            {[["রোপিত গাছ", bnNum(gram.trees)], ["তারিখ", gram.date], ["সময়", gram.time]].map(([l, v]) => (
+              <div key={l} className="rounded-xl bg-card px-3 py-2 shadow-soft">
+                <dt className="text-[10px] text-muted-foreground">{l}</dt>
+                <dd className="truncate text-[13px] font-semibold text-primary">{v}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <div className="grid grid-cols-3 gap-2 text-center">
+            {[["স্বেচ্ছাসেবক", bnNum(Math.max(8, Math.round(gram.trees / 40)))], ["বেঁচে থাকার হার", "৯২%"], ["CO₂ শোষণ/বছর", `${bnNum(Math.round(gram.trees * 0.022))} টন`]].map(([l, v]) => (
+              <div key={l} className="rounded-xl bg-secondary/50 px-2 py-1.5">
+                <div className="text-[13px] font-semibold">{v}</div>
+                <div className="truncate text-[10px] text-muted-foreground">{l}</div>
+              </div>
+            ))}
+          </div>
+
+          <p className="line-clamp-3 text-xs leading-relaxed text-muted-foreground sm:text-sm">{gram.info}</p>
+
+          <button
+            onClick={() => toast.success(`${gram.name} গ্রামে গাছ স্পনসরের অনুরোধ পাঠানো হয়েছে। ধন্যবাদ!`)}
+            className="rounded-xl bg-primary py-2 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-90"
+          >
+            🌳 এই গ্রামে একটি গাছ স্পনসর করুন
+          </button>
+        </section>
+
+        <section className="flex min-h-0 flex-col animate-in fade-in slide-in-from-right-4 duration-700 lg:justify-center">
+          <h2 className="mb-2 text-[11px] font-semibold text-muted-foreground">বৃক্ষরোপণের ছবি</h2>
+          <div className="grid min-h-0 flex-1 grid-cols-2 grid-rows-2 gap-2 lg:max-h-[75%] lg:flex-none lg:aspect-[4/3]">
+            {photos.map((src, i) => (
+              <img key={i} src={src} alt={`${gram.name} গ্রামে বৃক্ষরোপণ, ছবি ${bnNum(i + 1)}`} className="h-full min-h-0 w-full rounded-xl object-cover shadow-soft" />
+            ))}
+          </div>
+        </section>
       </div>
-    </main>
+    </Shell>
   );
 }
