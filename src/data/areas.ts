@@ -180,7 +180,7 @@ const LEADS = ["মো. রফিকুল ইসলাম", "সুমাইয
 export function recordDetails(u: Unit) {
   const h = hash(u.name + u.trees);
   return {
-    species: [0, 1, 2, 3].map((i) => SPECIES[(h + i * 4) % SPECIES.length] ?? ""),
+    species: [0, 1, 2, 3].map((i) => SPECIES[(h + i * 5) % SPECIES.length] ?? ""),
     volunteers: Math.max(8, Math.round(u.trees / 40)),
     survival: 86 + (h % 11),
     co2: Math.round(u.trees * 0.022),

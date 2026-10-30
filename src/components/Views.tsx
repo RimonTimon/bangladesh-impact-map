@@ -16,7 +16,7 @@ const grid = "mx-auto grid h-full max-w-6xl gap-3 px-4 pb-2 sm:px-8 lg:grid-cols
 export function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl bg-card px-3 py-2 shadow-soft">
-      <div className="truncate font-num text-base font-bold text-primary sm:text-lg">{value}</div>
+      <div className={`truncate font-num font-bold text-primary ${value.length > 10 ? "text-xs sm:text-sm" : "text-base sm:text-lg"}`}>{value}</div>
       <div className="truncate text-[10px] text-muted-foreground sm:text-[11px]">{label}</div>
     </div>
   );
@@ -245,7 +245,7 @@ export function RecordView({ unit, place, area, crumbs }: { unit: Unit; place: s
   const media = (
     <section className={`${tab === "media" ? "flex" : "hidden"} min-h-0 flex-col gap-2 lg:flex lg:justify-center animate-in fade-in slide-in-from-right-4 duration-700`}>
       <h2 className="text-[11px] font-semibold text-muted-foreground">বৃক্ষরোপণের ভিডিও ও ছবি</h2>
-      <video src={video.url} controls muted playsInline preload="metadata" poster={p1} className="aspect-video max-h-[50%] w-full rounded-xl bg-muted object-cover shadow-soft lg:max-h-none" />
+      <video src={video.url} controls muted playsInline preload="metadata" poster={p1} className="aspect-video min-h-0 w-full flex-1 rounded-xl bg-muted object-cover shadow-soft lg:max-h-[55%] lg:flex-none" />
       <div className="grid grid-cols-3 gap-2">
         {PHOTOS.map((src, i) => (
           <button key={i} onClick={() => setPhoto(i)} className="overflow-hidden rounded-xl shadow-soft">
