@@ -24,6 +24,7 @@ export const DISTRICT_BN: Record<string, string> = {
   "Cox's Bazar": "কক্সবাজার",
   Bandarban: "বান্দরবান",
   Jamalpur: "জামালপুর",
+  Naogaon: "নওগাঁ",
 };
 
 /** Upazila or city corporation drawn on a district map. */
