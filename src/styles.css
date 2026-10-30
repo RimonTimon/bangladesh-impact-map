@@ -51,7 +51,10 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --font-display: "Tiro Bangla", serif;
+  --font-display: "Noto Serif Bengali", serif;
+  --font-num: "Noto Sans Bengali", sans-serif;
+  --color-city: var(--city);
+  --color-city-strong: var(--city-strong);
   --font-sans: "Hind Siliguri", sans-serif;
   --shadow-soft: var(--shadow-soft-v);
   --color-map: var(--map);
@@ -73,10 +76,12 @@
   --shadow-soft-v: 0 1px 2px oklch(0.24 0.04 160 / 5%), 0 6px 20px -8px oklch(0.24 0.04 160 / 14%);
   --background: oklch(0.975 0.012 95);
   --foreground: oklch(0.24 0.04 160);
-  --map: oklch(0.88 0.03 150);
-  --map-hover: oklch(0.8 0.05 150);
-  --highlight: oklch(0.58 0.2 27);
-  --highlight-strong: oklch(0.5 0.21 27);
+  --map: oklch(0.9 0.015 90);
+  --map-hover: oklch(0.83 0.025 90);
+  --highlight: oklch(0.6 0.15 148);
+  --city: oklch(0.58 0.1 210);
+  --city-strong: oklch(0.48 0.1 212);
+  --highlight-strong: oklch(0.48 0.13 152);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);

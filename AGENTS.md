@@ -9,4 +9,4 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
-- Every page renders inside `src/components/Shell.tsx` (fixed-height, no page scroll, shared header with donate/volunteer dialogs) so layout stays consistent.
+- Every page renders inside `src/components/Shell.tsx` (fixed-height, no page scroll, logo header + breadcrumbs). All data and helpers live in `src/data/areas.ts`; page views in `src/components/Views.tsx`; navigation state in `src/routes/index.tsx` — keep this minimal file layout. Hierarchy: district → upazila → union → gram, or district → city corporation → ward so layout stays consistent.
