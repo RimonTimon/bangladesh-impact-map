@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Link } from "@tanstack/react-router";
 import { NGO } from "@/data/areas";
 
 export type Crumb = { label: string; onClick?: () => void };
@@ -14,9 +15,14 @@ export function Shell({ children, crumbs = [] }: { children: ReactNode; crumbs?:
             <span className="block truncate text-[10px] text-muted-foreground">{NGO.tagline}</span>
           </span>
         </button>
-        <span className="hidden shrink-0 rounded-full bg-secondary px-3 py-1 text-[10px] font-semibold text-secondary-foreground sm:block">
-          ✓ {NGO.reg}
-        </span>
+        <div className="flex shrink-0 items-center gap-2">
+          <Link to="/messages" className="rounded-full bg-primary px-3 py-1 text-[11px] font-semibold text-primary-foreground transition-opacity hover:opacity-90">
+            নেতৃত্বের বার্তা
+          </Link>
+          <span className="hidden rounded-full bg-secondary px-3 py-1 text-[10px] font-semibold text-secondary-foreground md:block">
+            ✓ {NGO.reg}
+          </span>
+        </div>
       </header>
       {crumbs.length > 1 && (
         <nav aria-label="অবস্থান" className="flex shrink-0 items-center gap-1 overflow-x-auto px-4 pb-2 text-[11px] whitespace-nowrap sm:px-8">
