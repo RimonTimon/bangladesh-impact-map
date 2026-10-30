@@ -33,7 +33,7 @@ export function Legend({ city }: { city?: boolean }) {
 }
 
 function Row({ name, sub, trees, max, active, onHover, onClick, tag }: {
-  name: string; sub?: string; trees: number; max: number; active: boolean; tag?: string;
+  name: string; sub?: string | undefined; trees: number; max: number; active: boolean; tag?: string | undefined;
   onHover: (on: boolean) => void; onClick: () => void;
 }) {
   const on = trees > 0;

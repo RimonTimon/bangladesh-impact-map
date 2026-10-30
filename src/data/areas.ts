@@ -57,7 +57,7 @@ const DATES: [string, string][] = [
 ];
 
 function split(total: number, n: number, seed: number, plantedEvery = 3): number[] {
-  const w = Array.from({ length: n }, (_, i) => ((seed >> i) % plantedEvery === 0 && i > 0 ? 0 : 2 + ((seed >> (i + 2)) % 5)));
+  const w: number[] = Array.from({ length: n }, (_, i): number => ((seed >> i) % plantedEvery === 0 && i > 0 ? 0 : 2 + ((seed >> (i + 2)) % 5)));
   if (total > 0 && w.every((x) => x === 0)) w[0] = 1;
   const sum = w.reduce((a, b) => a + b, 0) || 1;
   const parts = w.map((x) => Math.round((total * x) / sum));
