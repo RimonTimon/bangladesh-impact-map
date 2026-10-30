@@ -246,7 +246,7 @@ export function RecordView({ unit, place, area, crumbs }: { unit: Unit; place: s
     <section className={`${tab === "media" ? "flex" : "hidden"} min-h-0 flex-col gap-2 lg:flex lg:justify-center animate-in fade-in slide-in-from-right-4 duration-700`}>
       <h2 className="text-[11px] font-semibold text-muted-foreground">বৃক্ষরোপণের ভিডিও ও ছবি</h2>
       <video src={video.url} controls muted playsInline preload="metadata" poster={p1} className="aspect-video min-h-0 w-full flex-1 rounded-xl bg-muted object-cover shadow-soft lg:max-h-[55%] lg:flex-none" />
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-2 lg:grid-cols-6">
         {PHOTOS.map((src, i) => (
           <button key={i} onClick={() => setPhoto(i)} className="overflow-hidden rounded-xl shadow-soft">
             <img src={src} alt={`${unit.name} এ বৃক্ষরোপণ, ছবি ${bnNum(i + 1)}`} loading="lazy" width={1024} height={768} className="aspect-[4/3] w-full object-cover transition-transform hover:scale-105" />
